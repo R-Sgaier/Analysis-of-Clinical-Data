@@ -8,6 +8,9 @@ Biomarker_data <- as.data.frame(Sample_IDs_Biomarker)
 
 # Import clinical data
 clinical_data <- as.data.frame(Dataset_cohort_A)
+# Replace "NULL!" with NA in all columns
+clinical_data <- clinical_data %>% 
+  mutate_all(funs(replace(., . == "#NULL!", NA)))
 
 # Extract subset of data (patients/samples with available biomarker quantification results)
 subset_comp_data <- clinical_data[clinical_data$Patient_ID %in% Biomarker_data$Sample_ID, ]
@@ -15,8 +18,18 @@ subset_comp_data <- clinical_data[clinical_data$Patient_ID %in% Biomarker_data$S
 # Merge datasets to add Biomarker levels and Diagnosis 
 merged_df <- merge(subset_comp_data, Biomarker_data, by.x = "Patient_ID", by.y = "Sample_ID")
 
-# Create numeric matrix for correlation analysis
-mat_Biomarker_data <- as.data.frame(merged_df[, -42])
+# Function to convert data to numeric
+convert_to_numeric <- function(x) {
+  as.numeric(x, na.as.numeric = NA)
+}
+
+#convert to numeric values
+numeric_df <- merged_df %>% 
+  mutate_all(funs(convert_to_numeric))
+
+
+# Create matrix for correlation analysis
+mat_Biomarker_data <- as.matrix(numeric_df[, -42])
 
 # Select variables for correlation analysis
 selected_vars <- mat_Biomarker_data[, c("Var1", "Var2", "Var3", "Var5", "Var6", "Var8",
