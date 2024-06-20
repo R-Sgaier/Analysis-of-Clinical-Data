@@ -1,0 +1,37 @@
+# Load data
+test_data<-as.data.frame(Clinical_data)
+
+# Extract column names into a list
+column_names <- colnames(test_data)
+
+# Units are missing for hormone parameters. They can be assigned based on column names.
+# Testosterone levels can be reported using different units, depending on lab SOPs, in which case the range of values can be used to deduce the correct unit.
+
+# Function to add missing units to column names
+modify_column_names <- function(data) {
+  column_names <- colnames(data)
+  modified_names <- sapply(column_names, function(name) {
+    if (grepl("Testosterone", name)) {
+      max_value <- max(data[[name]])
+      if (max_value < 3) {
+        name <- paste(name, "  nmol/L")
+      } else {
+        name <- paste(name, "  ng/dL")
+      }
+    } else if (grepl("FSH", name)) {
+      name <- paste(name, " mIU/mL")
+    } else if (grepl("LH", name)) {
+      name <- paste(name, " mIU/mL")
+    }
+    return(name)
+  })
+  return(modified_names)
+}
+
+
+# Modify column names
+new_column_names <- modify_column_names(test_data)
+
+# Assign the new column names back to the data frame
+colnames(test_data) <- new_column_names
+
