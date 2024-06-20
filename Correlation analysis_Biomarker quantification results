@@ -1,0 +1,48 @@
+# Load libraries
+library(corrplot)
+library(ggplot2)
+
+
+# Import samples IDs with Diagnosis and Biomarker quantitation results
+Biomarker_data <- as.data.frame(Sample_IDs_Biomarker)
+
+# Import clinical data
+clinical_data <- as.data.frame(Dataset_cohort_A)
+
+# Extract subset of data (patients/samples with available biomarker quantification results)
+subset_comp_data <- clinical_data[clinical_data$Patient_ID %in% Biomarker_data$Sample_ID, ]
+
+# Merge datasets to add Biomarker levels and Diagnosis 
+merged_df <- merge(subset_comp_data, Biomarker_data, by.x = "Patient_ID", by.y = "Sample_ID")
+
+# Create numeric matrix for correlation analysis
+mat_Biomarker_data <- as.data.frame(merged_df[, -42])
+
+# Select variables for correlation analysis
+selected_vars <- mat_Biomarker_data[, c("Var1", "Var2", "Var3", "Var5", "Var6", "Var8",
+            "Var10", "Var12")]
+# Compute the correlation matrix, excluding pairs with missing values
+corr_Biomarker_matrix <- cor(selected_vars, use = "pairwise.complete.obs")
+
+# Define custom labels (clinical parameters)
+custom_labels <- c("Parameter_1", "Parameter_2", "Parameter_3", "Barameter_4", "Parameter_5", "Parameter_6",
+ "Parameter_7", "Parameter_8")
+
+# Set the column names of the correlation matrix to custom labels
+colnames(corr_Biomarker_matrix) <- custom_labels
+rownames(corr_Biomarker_matrix) <- custom_labels
+
+# Export correlation matrix 
+write.csv(corr_Biomarker_matrix, file = "correlation_matrix_Biomarker.csv")
+
+# Visualize correlation matrix
+corrplot(corr_Biomarker_matrix, method = "square", type = "upper",
+         tl.col = "black", tl.srt = 45)
+
+# Box and violin plot for Parameter_8 (Biomarker)
+p1 <- ggplot(merged_df, aes(x = Diagnosis, y = Var12, fill = Diagnosis)) +
+  geom_violin(trim = FALSE, alpha = 0.5) +
+  geom_boxplot(width = 0.1, outlier.shape = NA) +
+  labs(title = "Box and Violin Plot for Biomarker", y = "Biomarker (Unit)") +
+  theme_minimal()
+p1
