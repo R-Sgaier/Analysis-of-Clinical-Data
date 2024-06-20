@@ -1,9 +1,10 @@
 # Load libraries
 library(corrplot)
 library(ggplot2)
+library(psych)
 
 
-# Import samples IDs with Diagnosis and Biomarker quantitation results
+# Import sample IDs with Diagnosis and Biomarker quantitation results
 Biomarker_data <- as.data.frame(Sample_IDs_Biomarker)
 
 # Import clinical data
@@ -26,6 +27,11 @@ convert_to_numeric <- function(x) {
 #convert to numeric values
 numeric_df <- merged_df %>% 
   mutate_all(funs(convert_to_numeric))
+
+
+# Visualize pairwise correlation for relevant parameters
+pairs.panels(numeric_df[,c("Var1", "Var2", "Var3", "Var5", "Var6", "Var8",
+            "Var10", "Var12")])
 
 
 # Create matrix for correlation analysis
