@@ -2,7 +2,7 @@
 
 my_data_table<- as.data.frame(Clinical_data_AB_and_CD)
 
-# Load necessary library
+# Load necessary libraries
 library(dplyr)
 library(tidyr)
 
