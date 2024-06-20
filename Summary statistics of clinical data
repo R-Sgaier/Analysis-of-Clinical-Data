@@ -1,0 +1,94 @@
+# Load data table of relevant clinical parameters for AB and CD
+
+my_data_table<- as.data.frame(Clinical_data_AB_and_CD)
+
+# Load necessary library
+library(dplyr)
+library(tidyr)
+
+
+# Split the dataset into two groups based on Diagnosis
+data_AB <- my_data_table %>% filter(Diagnosis == "AB")
+data_CD <- my_data_table %>% filter(Diagnosis == "CD")
+
+
+# Obtain summary statistics for group AB and group CD, excluding patient_ID and Diagnosis
+stats_AB <- summary(data_AB[,-c(1,2)])
+stats_CD <- summary(data_CD[,-c(1,2)])
+
+# Extract stats into data frame and rename columns
+summary_AB<- as.data.frame(stats_AB)
+summary_CD <- as.data.frame(stats_CD)
+colnames(summary_AB)<- c("Var1", "CL_parameter", "Statistics")
+colnames(summary_CD)<- c("Var1", "CL_parameter", "Statistics")
+
+# First column is empty, second column contains names of clinical parameters
+# Third column contains statisitical concepts (mean, median), followed by ':' and values
+
+# Remove rows containing missing values
+filtered_AB<- summary_AB %>% drop_na(Statistics)
+filtered_CD<- summary_CD %>% drop_na(Statistics)
+
+# Split the statistics column by ":" to separate statistic name from value
+PRT_AB <- strsplit(as.character(filtered_AB$Statistics),':')          
+PRT_CD <- strsplit(as.character(filtered_CD$Statistics),':') 
+# Append the new columns 
+split_F_AB<-data.frame(filtered_AB$CL_parameter, do.call(rbind, PRT_AB))  
+colnames(split_F_AB)<- c("Parameter", "Stat", "Value")
+split_F_CD<-data.frame(filtered_CD$CL_parameter, do.call(rbind, PRT_CD))
+colnames(split_F_CD)<- c("Parameter", "Stat", "Value")
+
+
+
+# Create tables of summary statistics
+
+# Number of rows and columns in the new data frame
+num_rows <- 6
+num_cols <- 23
+
+# For AB; Create an empty data frame with the desired row and column names
+new_AB_data <- data.frame(matrix(nrow = num_rows, ncol = num_cols))
+rownames(new_AB_data) <- c("Min", "1st Qu", "Median", "Mean", "3rd Qu", "Max")
+colnames(new_AB_data) <- colnames(my_data_table)[3:25]
+# For CD; Create an empty data frame with the desired row and column names
+new_CD_data <- data.frame(matrix(nrow = num_rows, ncol = num_cols))
+rownames(new_CD_data) <- c("Min", "1st Qu", "Median", "Mean", "3rd Qu", "Max")
+colnames(new_CD_data) <- colnames(my_data_table)[3:25]
+
+# Fill in with data_AB
+for (i in 1:num_cols) {
+  new_AB_data[, i] <- data_f_AB$Value[((i - 1) * num_rows + 1):(i * num_rows)]
+}
+# Fill in with data_CD
+for (i in 1:num_cols) {
+  new_CD_data[, i] <- data_f_CD$Value[((i - 1) * num_rows + 1):(i * num_rows)]
+}
+
+
+# Export the tables
+write.csv(new_AB_data, "summary_statistics_AB.csv", row.names = TRUE)
+write.csv(new_CD_data, "summary_statistics_CD.csv", row.names = TRUE)
+
+
+
+# Wilcox rank sum test to compare AB and CD
+
+# Extract the names of the clinical parameters (excluding Patient ID and Diagnosis columns)
+clinical_parameters <- colnames(my_data_table)[-c(1,2)]
+
+# Initialize a list to store test results
+test_results <- list()
+
+# Perform statistical test for each clinical parameter
+for (param in clinical_parameters) {
+    test <- wilcox.test(data_AB[[param]], data_CD[[param]], exact = FALSE)
+    test_results[[param]] <- list(
+      test = "Mann-Whitney U test",
+      p_value = test$p.value
+    )
+} 
+
+print(test_results)
+
+# Export test results
+wilcoxon_table<- write.table(as.data.frame(test_results),file="Wilcoxon_HSPA2.csv", sep=",")
