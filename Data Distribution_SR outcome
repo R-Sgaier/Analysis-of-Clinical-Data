@@ -1,5 +1,6 @@
-** Python Script* *
+** Python Script **
 
+# EDA
 import pandas as pd
 import matplotlib.pyplot as plt
 
