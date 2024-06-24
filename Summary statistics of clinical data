@@ -1,4 +1,5 @@
-# Load data table of relevant clinical parameters for AB and CD
+# Load data table of relevant clinical parameters 
+# Patient groups (AB, CD)
 
 my_data_table<- as.data.frame(Clinical_data_AB_and_CD)
 
