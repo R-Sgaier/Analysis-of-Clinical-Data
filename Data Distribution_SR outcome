@@ -1,15 +1,16 @@
-# Load libraries 
+** Python Script* *
+
 import pandas as pd
 import matplotlib.pyplot as plt
 
 # Data frame (348 observations of 45 variables)
 my_cl_data = pd.read_csv("Clinical data_prediction.csv")
 
-# Filter rows where histological score is not 0 (successful sperm retrieval)
+# Filter rows where the histological score is > 0 (successful sperm retrieval)
 sperm_found_df = my_cl_data[my_cl_data['Score_AVG'] > 0]
 no_sperm_df = my_cl_data[my_cl_data['BScore_AVG'] <= 0]
 
-# Filter rows where histological score is 5 or above (Hypospermatogenesis or normal spermatogenesis)
+# Filter rows where the histological score is 5 or above (Hypospermatogenesis or normal spermatogenesis)
 HS_and_NS_df = my_cl_data[my_cl_data['Bergmann_Score_AVG']> 5]
 
 
