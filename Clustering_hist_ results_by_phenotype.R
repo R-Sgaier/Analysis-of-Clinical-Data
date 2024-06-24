@@ -2,11 +2,9 @@
 
 my_IHC_data<-as.data.frame(IHC_findings.csv)
 
-
 # Load libraries
 library(dplyr)
 library(pheatmap)
-
 
 
 # Function to convert selected columns from character to double
