@@ -40,6 +40,10 @@ mat_Biomarker_data <- as.matrix(numeric_df[, -42])
 # Select variables for correlation analysis
 selected_vars <- mat_Biomarker_data[, c("Var1", "Var2", "Var3", "Var5", "Var6", "Var8",
             "Var10", "Var12")]
+
+# Alternative selection of variables by column number
+# selected_vars <- mat_Biomarker_data[, c(7, 8, 11, 13, 14, 15, 17, 19, 21, 24, 25)]
+
 # Compute the correlation matrix, excluding pairs with missing values
 corr_Biomarker_matrix <- cor(selected_vars, use = "pairwise.complete.obs")
 
@@ -63,5 +67,5 @@ p1 <- ggplot(merged_df, aes(x = Diagnosis, y = Var12, fill = Diagnosis)) +
   geom_violin(trim = FALSE, alpha = 0.5) +
   geom_boxplot(width = 0.1, outlier.shape = NA) +
   labs(title = "Box and Violin Plot for Biomarker", y = "Biomarker (Unit)") +
-  theme_minimal()
+  theme_minimal(base_size = 15)
 p1
