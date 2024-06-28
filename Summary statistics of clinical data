@@ -81,15 +81,23 @@ clinical_parameters <- colnames(my_data_table)[-c(1,2)]
 test_results <- list()
 
 # Perform statistical test for each clinical parameter
+# Mann Whitney test, also known as Wilcoxon rank sum test with continuity correction
 for (param in clinical_parameters) {
-    test <- wilcox.test(data_AB[[param]], data_CD[[param]], exact = FALSE)
+    test <- wilcox.test(data_AB[[param]], data_CD[[param]], paired= FALSE, exact = FALSE)
     test_results[[param]] <- list(
+      variable = param,
       test = "Mann-Whitney U test",
+      test_statistic_W = test$statistic,
       p_value = test$p.value
     )
 } 
 
 print(test_results)
 
-# Export test results
-wilcoxon_table<- write.table(as.data.frame(test_results),file="Wilcoxon_HSPA2.csv", sep=",")
+# Convert list to data frame 
+library(tidyverse)
+M-Wh_df<- test_results %>% 
+  map_df(as_tibble)
+
+# Export test results to csv
+write.csv(M-Wh_df, file = "Mann-Whitney_test_results.csv")
