@@ -16,9 +16,9 @@ T.5_Abs <- (data["T.5_receptor_fluid", ] / data["receptor_fluid", ]) * 100
 data <- rbind(data, T.5_Abs = T.5_Abs)
 
 
-# If > 75% of total absorption occurs within half of the study duration,tape stripped material can be excluded
+# If > 75% of total absorption occurs within half of the study duration, tape-stripped material can be excluded
 # Variables for calculating absorption sum are absorbed dose, strips 3 +, and skin preparation
-# Define the function to calculate dermal absorption sum
+# Define the function to calculate the absorption sum
 calculate_D_Abs <- function(data) {
   D_Abs <- numeric(ncol(data))
   for (i in 1:ncol(data)) {
@@ -57,3 +57,4 @@ calculate_derm_Abs <- function(data) {
 
 # Calculate dermal absorption and add it to the data frame
 data["derm_Abs", ] <- calculate_derm_Abs(data)
+
