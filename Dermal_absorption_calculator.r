@@ -39,7 +39,7 @@ data["D_Abs", ] <- calculate_D_Abs(data)
 # If mean total recovery is < 95% and replicate total recovery is < 95%: the dermal absorption value is normalized 
 # If the absorption sum is < 5% and total recovery is < 95%, the missing recovery percentage is added to the dermal absorption value
 calculate_derm_Abs <- function(data) {
-  Total_recovery_mean <- mean(data["Total_recovery", ])
+  Total_recovery_mean <- mean(data["Total_recovery", ], na.rm = TRUE)
   derm_Abs <- numeric(ncol(data))
   for (i in 1:ncol(data)) {
     if (Total_recovery_mean < 95 && data["Total_recovery", i] < 95) {
